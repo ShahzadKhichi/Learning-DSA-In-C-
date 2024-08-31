@@ -1,0 +1,104 @@
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+#include <list>
+#include <queue>
+using namespace std;
+template <typename T>
+class graph
+{
+public:
+    unordered_map<T, list<T>> g;
+    vector<T> nodes;
+    void addEdge(T u, T n, bool direction)
+    {
+        g[u].push_back(n);
+        nodes.push_back(u);
+        if (!direction)
+        {
+            g[n].push_back(u);
+        }
+    }
+    void print()
+    {
+        for (auto i : g)
+        {
+            cout << i.first << " ---> | ";
+            for (auto j : i.second)
+            {
+                cout << j << " , ";
+            }
+            cout << "| " << endl;
+        }
+        cout << endl;
+    }
+};
+bool bfs(graph<int> &g, unordered_map<int, bool> &visited, vector<int> &ans, int node)
+{
+
+    queue<int> q;
+    vector<int> indegree(g.nodes.size() + 1, 0);
+    for (auto i : g.g)
+    {
+
+        for (auto j : i.second)
+        {
+            indegree[j]++;
+        }
+    }
+    for (int i = 0; i < indegree.size(); i++)
+    {
+        if (indegree[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+    int cnt = 0;
+    while (!q.empty())
+    {
+        int front = q.front();
+        q.pop();
+        ans.push_back(front);
+        cnt++;
+        for (auto i : g.g[front])
+        {
+            indegree[i]--;
+            if (indegree[i] == 0)
+            {
+                q.push(i);
+            }
+        }
+    }
+    if (cnt - 1 != g.nodes.size())
+    {
+        return true;
+    }
+    return false;
+}
+bool solve(graph<int> &g)
+{
+    vector<int> ans;
+    unordered_map<int, bool> visited;
+
+    return bfs(g, visited, ans, g.nodes[0]);
+}
+int main()
+{
+    int n, v;
+
+    cout << "Enter number of edges : ";
+    cin >> v;
+    cout << "Enter number of Nodes : ";
+    cin >> v;
+    graph<int> g;
+    for (int j = 0; j < v; j++)
+    {
+        int e, m;
+        cin >> m >> e;
+        g.addEdge(m, e, 1);
+    }
+    g.print();
+    cout << "Cylce Status : " << solve(g) << endl;
+    cout << endl;
+    return 0;
+}
